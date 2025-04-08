@@ -1,11 +1,11 @@
+import YahootLogo from "../assets/yahoot.png";
 import { useState } from "react";
 
 export default function MainPage() {
   const username = localStorage.getItem("username");
   const [name, setName] = useState(username || "");
 
-  async function inputUsername(e) {
-    e.preventDefault();
+  async function inputUsername() {
     try {
       localStorage.setItem("username", name);
     } catch (error) {
@@ -15,9 +15,10 @@ export default function MainPage() {
 
   return (
     <section>
-      <div className="flex flex-col items-center justify-evenly h-100">
+      <div className="flex flex-col items-center justify-evenly h-screen">
+        <img src={YahootLogo} alt="Yahoot Logo" className="h-15" />
         {username ? (
-          <h1>Hello, {username}!</h1>
+          <h1 className="text-3xl">Hello, {username}!</h1>
         ) : (
           <form onSubmit={inputUsername}>
             <label className="input validator">

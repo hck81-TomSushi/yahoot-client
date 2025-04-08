@@ -1,17 +1,51 @@
+import { useNavigate } from "react-router";
+import { yahootServer } from "../../helpers/http-client";
 import YahootLogo from "../assets/yahoot.png";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Swal from "sweetalert2";
 
 export default function MainPage() {
-  const username = localStorage.getItem("username");
-  const [name, setName] = useState(username || "");
+  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
+  const navigate = useNavigate();
 
-  async function inputUsername() {
+  const inputUsername = async () => {
     try {
-      localStorage.setItem("username", name);
+      const {data} = await yahootServer.post("/login", { username: name })
+      localStorage.setItem("access_token", "Bearer " + data.access_token);
+      setUsername(data.username);
     } catch (error) {
-      console.log("🐄 - inputUsername - error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Namanya ga bener!",
+        showConfirmButton: false,
+        timer: 1500
+      });
     }
   }
+
+  const checkUsername = async () => {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      try {
+        const {data} = await yahootServer.get("/username", {
+          headers: { Authorization: localStorage.getItem('access_token') }
+        });
+        setUsername(data.username);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  }
+
+  const deleteUsername = () => {
+    localStorage.removeItem("access_token");
+    setUsername("");
+  }
+
+  useEffect(() => {
+    checkUsername();  
+  }, []);
 
   return (
     <section>
@@ -20,7 +54,7 @@ export default function MainPage() {
         {username ? (
           <h1 className="text-3xl">Hello, {username}!</h1>
         ) : (
-          <form onSubmit={inputUsername}>
+          <form onSubmit={() => inputUsername()}>
             <label className="input validator">
               <svg
                 className="h-[1em] opacity-50"
@@ -48,14 +82,24 @@ export default function MainPage() {
                 onChange={(e) => setName(e.target.value)}
               />
             </label>
+            <button className="btn btn-accent btn-lg text-3lg w-80 h-15" type="button" onClick={() => inputUsername()}>
+              I want this name!
+            </button>
           </form>
         )}
-        <a
-          className="btn btn-accent btn-xl text-3xl w-100 h-50"
-          href="/waiting-room"
-        >
-          Start Playing!
-        </a>
+        {username && (
+          <>
+            <button className="btn btn-accent btn-lg text-3lg w-80 h-15" type="button" onClick={() => deleteUsername()}>
+              I want to change my name!
+            </button>
+            <button
+              className="btn btn-accent btn-xl text-3xl w-100 h-50"
+              onClick={() => navigate("/waiting-room")}
+              >
+              Start Playing!
+            </button>
+          </>
+        )}
       </div>
     </section>
   );

@@ -32,7 +32,7 @@ export default function GamePage() {
   return (
     <div className="h-screen flex flex-col items-center justify-evenly">
       <h1 className="text-3xl">Quiz Science</h1>
-      <div className="card card-border bg-base-100 w-100vh card-xl">
+      <div className="card card-border bg-success text-base-100 w-100vh card-xl">
         <div className="card-body items-center text-center">
           <h2 className="card-title">Pertanyaan</h2>
           <p>Siapa yang menemukan teori relativitas?</p>
@@ -64,7 +64,7 @@ export default function GamePage() {
       </div>
       <div className="grid grid-cols-2 gap-4">
         <div
-          className="card card-border bg-base-100 w-100"
+          className="card card-border bg-primary text-base-100 w-100"
           onClick={chooseAnswer}
         >
           <div className="card-body items-center text-center">
@@ -73,7 +73,7 @@ export default function GamePage() {
           </div>
         </div>
         <div
-          className="card card-border bg-base-100 w-100"
+          className="card card-border bg-secondary text-base-100 w-100"
           onClick={chooseAnswer}
         >
           <div className="card-body items-center text-center">
@@ -82,7 +82,7 @@ export default function GamePage() {
           </div>
         </div>
         <div
-          className="card card-border bg-base-100 w-100"
+          className="card card-border bg-accent text-base-100 w-100"
           onClick={chooseAnswer}
         >
           <div className="card-body items-center text-center">
@@ -91,7 +91,7 @@ export default function GamePage() {
           </div>
         </div>
         <div
-          className="card card-border bg-base-100 w-100"
+          className="card card-border bg-neutral text-base-100 w-100"
           onClick={chooseAnswer}
         >
           <div className="card-body items-center text-center">

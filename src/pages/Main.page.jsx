@@ -50,7 +50,10 @@ export default function MainPage() {
             </label>
           </form>
         )}
-        <a className="btn btn-accent btn-xl w-100 h-50" href="/waiting-room">
+        <a
+          className="btn btn-accent btn-xl text-3xl w-100 h-50"
+          href="/waiting-room"
+        >
           Start Playing!
         </a>
       </div>

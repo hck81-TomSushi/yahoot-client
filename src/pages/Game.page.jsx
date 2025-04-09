@@ -1,24 +1,30 @@
-import {useEffect, useState} from "react";
-import {yahootServer} from "../../helpers/http-client";
+import { useEffect, useState } from "react";
+import { yahootServer } from "../../helpers/http-client";
 import Swal from "sweetalert2";
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
+import CorrectSFX from "../assets/correct_answer.mp3";
+import WrongSFX from "../assets/wrong_answer.mp3";
+import HintSFX from "../assets/hint.mp3";
 
 export default function GamePage() {
   const [counter, setCounter] = useState(0);
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
   const navigate = useNavigate();
+  const correctSFX = new Audio(CorrectSFX);
+  const wrongSFX = new Audio(WrongSFX);
+  const hintSFX = new Audio(HintSFX);
 
   useEffect(() => {
     async function fetchQuestions() {
       try {
         const response = await yahootServer.get("/questions", {
-          headers: {Authorization: localStorage.getItem("access_token")},
+          headers: { Authorization: localStorage.getItem("access_token") },
         });
         setQuestions(response.data.questions);
         setQuestion(response.data.questions[counter]);
       } catch (error) {
-        // console.log("🐄 - fetchQuestions - error:", error);
+        console.log("🐄 - fetchQuestions - error:", error);
         Swal.fire({
           icon: "error",
           title: "Tidak bisa mengakses DB",
@@ -38,7 +44,6 @@ export default function GamePage() {
         question.answer3,
         question.rightAnswer,
       ]);
-      // console.log(questionn, answers, typeof answers, "<<< input ke hint");
       const response = await yahootServer.post(
         "/hint",
         {
@@ -46,18 +51,17 @@ export default function GamePage() {
           answers: answers,
         },
         {
-          headers: {Authorization: localStorage.getItem("access_token")},
+          headers: { Authorization: localStorage.getItem("access_token") },
         }
       );
-
-      // console.log("🐄 - getHint - response:", response);
+      hintSFX.play();
       Swal.fire({
         icon: "question",
-        title: "Hint",
+        title: "Petunjuk",
         text: response.data.hint,
       });
     } catch (error) {
-      // console.log("🐄 - getHint - error:", error);
+      console.log("🐄 - getHint - error:", error);
       Swal.fire({
         icon: "error",
         title: "Gagal mengakses AI",
@@ -69,16 +73,18 @@ export default function GamePage() {
   async function chooseAnswer(answer) {
     try {
       if (answer === question.rightAnswer) {
+        correctSFX.play();
         Swal.fire({
           icon: "success",
-          title: "Correct answer",
-          confirmButtonText: "Next",
+          title: "Jawaban benar",
+          confirmButtonText: "Selanjutnya",
         });
       } else {
+        wrongSFX.play();
         Swal.fire({
           icon: "error",
-          title: "Wrong answer",
-          confirmButtonText: "Next",
+          title: "Jawaban salah",
+          confirmButtonText: "Selanjutnya",
         });
       }
       if (counter < 9) {
@@ -101,7 +107,8 @@ export default function GamePage() {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className="size-6">
+          className="size-6"
+        >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -110,23 +117,26 @@ export default function GamePage() {
         </svg>
       </a>
       <div className="h-full flex flex-col items-center justify-evenly">
-        <h1 className="text-3xl">Quiz Science</h1>
+        <h1 className="text-3xl">Tema Kuis: Science</h1>
         <p className="text-xl text-center">{question?.question}</p>
         <div>
           <button
             className="btn btn-success border-b-4"
             onClick={getHint}
-            title="Get Hint from AI">
+            title="Get Hint from AI"
+          >
             <svg
               className="h-[1em] opacity-50"
               xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24">
+              viewBox="0 0 24 24"
+            >
               <g
                 strokeLinejoin="round"
                 strokeLinecap="round"
                 strokeWidth="2.5"
                 fill="none"
-                stroke="currentColor">
+                stroke="currentColor"
+              >
                 <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
                 <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
               </g>
@@ -136,7 +146,8 @@ export default function GamePage() {
         <div className="grid grid-cols-2 gap-4">
           <div
             className="card border-b-4 bg-primary w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer1)}>
+            onClick={() => chooseAnswer(question?.answer1)}
+          >
             <div className="card-body items-center text-center">
               <h2 className="card-title">A.</h2>
               <p>{question?.answer1}</p>
@@ -144,7 +155,8 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-secondary w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer2)}>
+            onClick={() => chooseAnswer(question?.answer2)}
+          >
             <div className="card-body items-center text-center">
               <h2 className="card-title">B.</h2>
               <p>{question?.answer2}</p>
@@ -152,7 +164,8 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-accent w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer3)}>
+            onClick={() => chooseAnswer(question?.answer3)}
+          >
             <div className="card-body items-center text-center">
               <h2 className="card-title">C.</h2>
               <p>{question?.answer3}</p>
@@ -160,7 +173,8 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-neutral w-100 answer-card"
-            onClick={() => chooseAnswer(question?.rightAnswer)}>
+            onClick={() => chooseAnswer(question?.rightAnswer)}
+          >
             <div className="card-body items-center text-center">
               <h2 className="card-title">D.</h2>
               <p>{question?.rightAnswer}</p>

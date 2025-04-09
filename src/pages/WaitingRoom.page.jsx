@@ -1,6 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { io } from "socket.io-client";
+import { useUsername } from "../contexts/username.context";
+
+const socket = io("http://localhost:3000", {
+  auth: {
+    token: localStorage.getItem("access_token"),
+  },
+  // reconnection: true,
+  // reconnectionAttempts: 5,
+  // reconnectionDelay: 1000,
+});
 
 export default function WaitingRoom() {
+  const { username, setUsername } = useUsername();
   const [isReady, setIsReady] = useState(false);
 
   // fetch question untuk dapet tema quiz
@@ -23,6 +35,24 @@ export default function WaitingRoom() {
       console.log("🐄 - countdown - error:", error);
     }
   }
+
+  useEffect(() => {
+    socket.on("say hello", (params) => {
+      console.log(params, "<<< message dari server");
+    });
+
+    socket.emit("say hello", { message: `Hello from ${username}` });
+
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
+  const handleSayHello = () => {
+    // Emit "say hello" event to the server
+    socket.emit("say hello", { message: "Hello from client" });
+  };
 
   return (
     <section className="chalkboard">
@@ -59,7 +89,7 @@ export default function WaitingRoom() {
           <button className="btn btn-accent" title="Ready to play">
             user1
           </button>
-          <button className="btn btn-neutral" title="Not ready">
+          <button className="btn btn-neutral" title="Not ready" onClick={handleSayHello}>
             user2
           </button>
           <button className="btn btn-accent" title="Ready to play">

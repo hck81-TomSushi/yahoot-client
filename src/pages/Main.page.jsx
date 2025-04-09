@@ -1,18 +1,19 @@
 import { useNavigate } from "react-router";
-import { yahootServer } from "../../helpers/http-client";
 import YahootLogo from "../assets/yahoot_white.png";
-import { useState } from "react";
 import Swal from "sweetalert2";
+import { useUsername } from "../contexts/username.context";
+import { useState } from "react";
 
 export default function MainPage() {
-  const [username, setUsername] = useState("");
+  const { username, setUsername } = useUsername();
+  const [ formName, setFormName ] = useState('');
   const navigate = useNavigate();
 
   const inputUsername = async () => {
     try {
-      const { data } = await yahootServer.post("/login", { username });
-      localStorage.setItem("access_token", "Bearer " + data.access_token);
-      setUsername(data.username);
+      // const { data } = await yahootServer.post("/login", { username });
+      // localStorage.setItem("access_token", "Bearer " + data.access_token);
+      setUsername(formName);
       navigate("/");
     } catch (error) {
       console.log("🐄 - inputUsername - error:", error);
@@ -56,8 +57,8 @@ export default function MainPage() {
               className="text-center text-accent text-xl"
               required
               placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={formName}
+              onChange={(e) => setFormName(e.target.value)}
             />
           </label>
           <button

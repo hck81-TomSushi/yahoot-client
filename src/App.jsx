@@ -8,21 +8,24 @@ import Leaderboard from "./pages/Leaderboard";
 import AuthenLayout from "./layouts/AuthenLayout";
 import LandingPage from "./pages/Landing.page";
 import LoginLayout from "./layouts/LoginLayout";
+import { UsernameProvider } from "./contexts/username.context";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/login" element={<LoginLayout />}>
-          <Route index element={<MainPage />} />
-        </Route>
-        <Route path="/" element={<AuthenLayout />}>
-          <Route index element={<LandingPage />} />
-          <Route path="/waiting-room" element={<WaitingRoom />} />
-          <Route path="/game" element={<GamePage />} />
-          <Route path="/result" element={<Leaderboard />} />
-        </Route>
-      </Routes>
+      <UsernameProvider>
+        <Routes>
+          <Route path="/login" element={<LoginLayout />}>
+            <Route index element={<MainPage />} />
+          </Route>
+          <Route path="/" element={<AuthenLayout />}>
+            <Route index element={<LandingPage />} />
+            <Route path="/waiting-room" element={<WaitingRoom />} />
+            <Route path="/game" element={<GamePage />} />
+            <Route path="/result" element={<Leaderboard />} />
+          </Route>
+        </Routes>
+      </UsernameProvider>
     </BrowserRouter>
   );
 }

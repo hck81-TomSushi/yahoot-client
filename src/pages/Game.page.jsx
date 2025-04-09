@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { yahootServer } from "../../helpers/http-client";
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router";
+import BGM from "../assets/quiz_bgm.mp3";
 import CorrectSFX from "../assets/correct_answer.mp3";
 import WrongSFX from "../assets/wrong_answer.mp3";
 import HintSFX from "../assets/hint.mp3";
@@ -11,9 +12,22 @@ export default function GamePage() {
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
   const navigate = useNavigate();
+  const audioRef = useRef(null);
   const correctSFX = new Audio(CorrectSFX);
   const wrongSFX = new Audio(WrongSFX);
   const hintSFX = new Audio(HintSFX);
+
+  useEffect(() => {
+    function playAudio() {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+      }
+    }
+    playAudio();
+  }, []);
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -79,6 +93,7 @@ export default function GamePage() {
           title: "Jawaban benar",
           confirmButtonText: "Selanjutnya",
         });
+        // dapat poin -> kalo pake hint poinnya ga maksimal
       } else {
         wrongSFX.play();
         Swal.fire({
@@ -100,6 +115,8 @@ export default function GamePage() {
 
   return (
     <section className="chalkboard">
+      <audio ref={audioRef} src={BGM} loop autoPlay />
+
       <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"

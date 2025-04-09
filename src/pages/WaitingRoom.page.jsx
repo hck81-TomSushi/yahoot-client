@@ -1,10 +1,12 @@
 import { useState } from "react";
-import YahootLogo from "../assets/yahoot_white.png";
 import { useNavigate } from "react-router";
+import YahootLogo from "../assets/yahoot_white.png";
+import CountdownSound from "../assets/countdown.mp3";
 
 export default function WaitingRoom() {
   const [countdown, setCountdown] = useState(-1);
   const navigate = useNavigate();
+  const countdownSound = new Audio(CountdownSound);
 
   // real time user yang ready
   // klik button user sendiri -> status user sendiri jadi ready
@@ -15,6 +17,7 @@ export default function WaitingRoom() {
       let counter = seconds;
       const interval = setInterval(() => {
         setCountdown(counter);
+        countdownSound.play();
         counter--;
         if (counter < 0) {
           clearInterval(interval);

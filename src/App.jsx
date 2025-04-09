@@ -6,13 +6,18 @@ import WaitingRoom from "./pages/WaitingRoom.page";
 import GamePage from "./pages/Game.page";
 import Leaderboard from "./pages/Leaderboard";
 import AuthenLayout from "./layouts/AuthenLayout";
+import LandingPage from "./pages/Landing.page";
+import LoginLayout from "./layouts/LoginLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={<MainPage />} />
-        <Route path="/" element={<AuthenLayout />} >
+        <Route path="/login" element={<LoginLayout />}>
+          <Route index element={<MainPage />} />
+        </Route>
+        <Route path="/" element={<AuthenLayout />}>
+          <Route index element={<LandingPage />} />
           <Route path="/waiting-room" element={<WaitingRoom />} />
           <Route path="/game" element={<GamePage />} />
           <Route path="/result" element={<Leaderboard />} />

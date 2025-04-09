@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router";
 import { yahootServer } from "../../helpers/http-client";
 import { useEffect, useState } from "react";
+import { socket } from "../../helpers/socket";
 
 export default function AuthenLayout() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -31,6 +32,13 @@ export default function AuthenLayout() {
     };
     checkAuthentication();
   }, [navigate]);
+  
+  // useEffect(() => {
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   if (!isAuthenticated) {
     return null;

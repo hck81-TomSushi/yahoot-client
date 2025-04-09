@@ -1,15 +1,41 @@
 import { useEffect, useRef, useState } from "react";
+import { useUsername } from "../contexts/username.context";
+import { socket } from "../../helpers/socket";
 import { useNavigate } from "react-router";
 import YahootLogo from "../assets/yahoot_white.png";
 import BGM from "../assets/main_bgm.mp3";
 import CountdownSound from "../assets/countdown.mp3";
 
 export default function WaitingRoom() {
-  const [countdown, setCountdown] = useState(-1);
+  const { username, userCode, setUsername } = useUsername();
+  const [countdown, setCountdown] = useState(20);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
   const audioRef = useRef(null);
   const countdownSound = new Audio(CountdownSound);
 
+  useEffect(() => {
+    socket.on("user queue", (roomData) => {
+      setUsers(roomData);
+      console.log("Updated room data:", roomData);
+    });
+
+    socket.emit("game queue", { username, userCode });
+    
+    socket.on("countdown", (time) => {
+      setCountdown(time);
+    });
+
+    socket.on("start game", (data) => {
+      console.log("Navigating to:", data.path);
+      navigate(data.path);
+    });
+
+    return () => {
+      socket.off("game queue");
+    };
+  }, []);
+  
   useEffect(() => {
     function playAudio() {
       const audio = audioRef.current;
@@ -24,32 +50,11 @@ export default function WaitingRoom() {
     }
     playAudio();
   }, [countdown]);
-
-  // real time user yang ready
-  // klik button user sendiri -> status user sendiri jadi ready
-  // kalo semua udah ready -> isReady =  true -> mulai countdown
-
-  async function startCountdown(seconds) {
-    try {
-      let counter = seconds;
-      const interval = setInterval(() => {
-        setCountdown(counter);
-        countdownSound.play();
-        counter--;
-        if (counter < 0) {
-          clearInterval(interval);
-          navigate("/game");
-        }
-      }, 1000);
-    } catch (error) {
-      console.log("🐄 - countdown - error:", error);
-    }
-  }
-
+  
   return (
     <section className="chalkboard">
       <audio ref={audioRef} src={BGM} loop autoPlay />
-      <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
+      <a onClick={() => navigate('/')} className="btn btn-success border-b-4 absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -68,36 +73,19 @@ export default function WaitingRoom() {
 
       <div className="h-full flex flex-col items-center justify-evenly">
         <img src={YahootLogo} alt="Yahoot Logo" className="h-15" />
-        <h1 className="text-2xl">Kuis akan segera dimulai...</h1>
-        {countdown > 0 ? (
-          <span className="countdown font-mono text-6xl text-accent">
-            <span style={{ "--value": countdown }} aria-live="polite">
-              countdown
-            </span>
-          </span>
-        ) : (
-          <>
-            <span className="loading loading-spinner text-accent"></span>
-            <p>Menunggu pemain lain...</p>
-          </>
-        )}
-        <button
-          className="btn btn-success btn-xl"
-          // harusnya ubah status jadi ready => kalo semua user udah ready baru startCountdown jalan
-          onClick={() => startCountdown(5)}
-        >
-          Aku siap!
-        </button>
+        <h1 className="text-2xl">
+          Quiz Theme:
+          <br />
+          Pengetahuan Umum
+        </h1>
+        
+        <p>Countdown : {countdown} second</p>
         <div className="flex flex-row gap-4 items-center justify-items-center">
-          <button className="btn btn-accent" title="Ready to play">
-            user1
-          </button>
-          <button className="btn btn-neutral" title="Not ready">
-            user2
-          </button>
-          <button className="btn btn-accent" title="Ready to play">
-            user3
-          </button>
+          {users.map((user, index) => (
+            <button className="btn btn-accent" title="Ready to play">
+              {user.username}
+            </button>
+          ))}
         </div>
       </div>
     </section>

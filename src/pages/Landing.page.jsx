@@ -1,11 +1,13 @@
 import { useNavigate } from "react-router";
 import { yahootServer } from "../../helpers/http-client";
 import YahootLogo from "../assets/yahoot_white.png";
+import { socket } from "../../helpers/socket";
+import { useUsername } from "../contexts/username.context";
 import { useEffect, useState, useRef } from "react";
 import BGM from "../assets/main_bgm.mp3";
 
 export default function LandingPage() {
-  const [username, setUsername] = useState("");
+  const { username, userCode, setUsername } = useUsername();
   const navigate = useNavigate();
   const audioRef = useRef(null);
 
@@ -29,6 +31,7 @@ export default function LandingPage() {
           headers: { Authorization: localStorage.getItem("access_token") },
         });
         setUsername(data.username);
+        socket.connect();
       } catch (error) {
         console.log(error);
       }
@@ -43,6 +46,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     checkUsername();
+    console.log("username", username, " || userCode", userCode);
+    
+    socket.on("game queue", { username, userCode });
   }, []);
 
   return (

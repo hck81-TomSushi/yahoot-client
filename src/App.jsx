@@ -5,15 +5,18 @@ import MainPage from "./pages/Main.page";
 import WaitingRoom from "./pages/WaitingRoom.page";
 import GamePage from "./pages/Game.page";
 import Leaderboard from "./pages/Leaderboard";
+import AuthenLayout from "./layouts/AuthenLayout";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<MainPage />} />
-        <Route path="/waiting-room" element={<WaitingRoom />} />
-        <Route path="/game" element={<GamePage />} />
-        <Route path="/result" element={<Leaderboard />} />
+        <Route path="/login" element={<MainPage />} />
+        <Route path="/" element={<AuthenLayout />} >
+          <Route path="/waiting-room" element={<WaitingRoom />} />
+          <Route path="/game" element={<GamePage />} />
+          <Route path="/result" element={<Leaderboard />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );

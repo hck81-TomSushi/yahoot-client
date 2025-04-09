@@ -1,44 +1,122 @@
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { yahootServer } from "../../helpers/http-client";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
+import BGM from "../assets/quiz_bgm.mp3";
+import CorrectSFX from "../assets/correct_answer.mp3";
+import WrongSFX from "../assets/wrong_answer.mp3";
+import HintSFX from "../assets/hint.mp3";
 
 export default function GamePage() {
+  const [counter, setCounter] = useState(0);
   const [question, setQuestion] = useState({});
+  const [questions, setQuestions] = useState([]);
+  const navigate = useNavigate();
+  const audioRef = useRef(null);
+  const correctSFX = new Audio(CorrectSFX);
+  const wrongSFX = new Audio(WrongSFX);
+  const hintSFX = new Audio(HintSFX);
+
+  useEffect(() => {
+    function playAudio() {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+      }
+    }
+    playAudio();
+  }, []);
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        const response = await yahootServer.get("/questions", {
+          headers: { Authorization: localStorage.getItem("access_token") },
+        });
+        setQuestions(response.data.questions);
+        setQuestion(response.data.questions[counter]);
+      } catch (error) {
+        console.log("🐄 - fetchQuestions - error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Tidak bisa mengakses DB",
+          confirmButtonText: "close",
+        });
+      }
+    }
+    fetchQuestions();
+  }, [counter]);
 
   async function getHint() {
     try {
+      const questionn = question.question;
+      const answers = JSON.stringify([
+        question.answer1,
+        question.answer2,
+        question.answer3,
+        question.rightAnswer,
+      ]);
+      const response = await yahootServer.post(
+        "/hint",
+        {
+          question: questionn,
+          answers: answers,
+        },
+        {
+          headers: { Authorization: localStorage.getItem("access_token") },
+        }
+      );
+      hintSFX.play();
       Swal.fire({
         icon: "question",
-        title: "Hint",
-        text: "Albert Einstein is a physicist known for his theory of relativity.",
+        title: "Petunjuk",
+        text: response.data.hint,
       });
     } catch (error) {
       console.log("🐄 - getHint - error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Gagal mengakses AI",
+        confirmButtonText: "close",
+      });
     }
   }
 
   async function chooseAnswer(answer) {
     try {
-      if (answer === "Albert Einstein") {
+      if (answer === question.rightAnswer) {
+        correctSFX.play();
         Swal.fire({
           icon: "success",
-          title: "Correct answer",
-          confirmButtonText: "Next",
+          title: "Jawaban benar",
+          confirmButtonText: "Selanjutnya",
         });
+        // dapat poin -> kalo pake hint poinnya ga maksimal
       } else {
+        wrongSFX.play();
         Swal.fire({
           icon: "error",
-          title: "Wrong answer",
-          confirmButtonText: "Next",
+          title: "Jawaban salah",
+          confirmButtonText: "Selanjutnya",
         });
       }
-      // go to the next question kayak gini kayanya
-      setQuestion(question.id + 1);
+      if (counter < 9) {
+        setCounter(counter + 1);
+        setQuestion(questions[counter]);
+      } else {
+        navigate("/result");
+      }
     } catch (error) {
       console.log("🐄 - chooseAnswer - error:", error);
     }
   }
+
   return (
     <section className="chalkboard">
+      <audio ref={audioRef} src={BGM} loop autoPlay />
+
       <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -56,10 +134,8 @@ export default function GamePage() {
         </svg>
       </a>
       <div className="h-full flex flex-col items-center justify-evenly">
-        <h1 className="text-3xl">Quiz Science</h1>
-        <p className="text-xl text-center">
-          Siapa yang menemukan teori relativitas?
-        </p>
+        <h1 className="text-3xl">Tema Kuis: Science</h1>
+        <p className="text-xl text-center">{question?.question}</p>
         <div>
           <button
             className="btn btn-success border-b-4"
@@ -87,38 +163,38 @@ export default function GamePage() {
         <div className="grid grid-cols-2 gap-4">
           <div
             className="card border-b-4 bg-primary w-100 answer-card"
-            onClick={() => chooseAnswer("Albert Einstein")}
+            onClick={() => chooseAnswer(question?.answer1)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">A.</h2>
-              <p>Albert Einstein</p>
+              <p>{question?.answer1}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-secondary w-100 answer-card"
-            onClick={() => chooseAnswer("Isaac Newton")}
+            onClick={() => chooseAnswer(question?.answer2)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">B.</h2>
-              <p>Isaac Newton</p>
+              <p>{question?.answer2}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-accent w-100 answer-card"
-            onClick={() => chooseAnswer("Galileo Galilei")}
+            onClick={() => chooseAnswer(question?.answer3)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">C.</h2>
-              <p>Galileo Galilei</p>
+              <p>{question?.answer3}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-neutral w-100 answer-card"
-            onClick={() => chooseAnswer("Nikola Tesla")}
+            onClick={() => chooseAnswer(question?.rightAnswer)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">D.</h2>
-              <p>Nikola Tesla</p>
+              <p>{question?.rightAnswer}</p>
             </div>
           </div>
         </div>

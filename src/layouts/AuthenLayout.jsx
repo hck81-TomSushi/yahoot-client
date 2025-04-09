@@ -33,15 +33,12 @@ export default function AuthenLayout() {
     checkAuthentication();
   }, [navigate]);
   
-  useEffect(() => {
-    socket.on("say hello", (params) => {
-      console.log(params, "<<< message dari server");
-    });
-    
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+  // useEffect(() => {
+
+  //   return () => {
+  //     socket.disconnect();
+  //   };
+  // }, []);
 
   if (!isAuthenticated) {
     return null;

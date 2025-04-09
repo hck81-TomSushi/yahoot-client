@@ -4,46 +4,32 @@ import { socket } from "../../helpers/socket";
 import { useNavigate } from "react-router";
 
 export default function WaitingRoom() {
-  const { username, setUsername } = useUsername();
-  const [isReady, setIsReady] = useState(false);
+  const { username, userCode, setUsername } = useUsername();
+  const [countdown, setCountdown] = useState(20);
+  const [users, setUsers] = useState([]);
   const navigate = useNavigate();
 
-  // fetch question untuk dapet tema quiz
-  // real time user yang ready
-  // klik button user sendiri -> status user sendiri jadi ready
-  // kalo semua udah ready -> isReady =  true -> mulai countdown
-
-  function countdown(seconds) {
-    try {
-      let counter = seconds;
-      const interval = setInterval(() => {
-        console.log(counter);
-        counter--;
-        if (counter < 0) {
-          clearInterval(interval);
-          console.log("Game start!");
-        }
-      }, 1000);
-    } catch (error) {
-      console.log("🐄 - countdown - error:", error);
-    }
-  }
-
   useEffect(() => {
-    socket.emit("game queue", { username });
-
-    socket.on("game queue", (roomData) => {
+    socket.on("user queue", (roomData) => {
+      setUsers(roomData);
       console.log("Updated room data:", roomData);
+    });
+
+    socket.emit("game queue", { username, userCode });
+    
+    socket.on("countdown", (time) => {
+      setCountdown(time);
+    });
+
+    socket.on("start game", (data) => {
+      console.log("Navigating to:", data.path);
+      navigate(data.path);
     });
 
     return () => {
       socket.off("game queue");
     };
   }, []);
-
-  const handleSayHello = () => {
-    socket.emit("say hello", { message: "Hello from client" });
-  };
 
   return (
     <section className="chalkboard">
@@ -70,22 +56,14 @@ export default function WaitingRoom() {
           <br />
           Pengetahuan Umum
         </h1>
-        {isReady ? (
-          countdown(5)
-        ) : (
-          <span className="loading loading-spinner text-accent"></span>
-        )}
-        <p>Waiting for other users...</p>
+        
+        <p>Countdown : {countdown} second</p>
         <div className="flex flex-row gap-4 items-center justify-items-center">
-          <button className="btn btn-accent" title="Ready to play">
-            user1
-          </button>
-          <button className="btn btn-neutral" title="Not ready" onClick={handleSayHello}>
-            user2
-          </button>
-          <button className="btn btn-accent" title="Ready to play">
-            user3
-          </button>
+          {users.map((user, index) => (
+            <button className="btn btn-accent" title="Ready to play">
+              {user.username}
+            </button>
+          ))}
         </div>
       </div>
     </section>

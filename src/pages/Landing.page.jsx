@@ -6,7 +6,7 @@ import { socket } from "../../helpers/socket";
 import { useUsername } from "../contexts/username.context";
 
 export default function LandingPage() {
-  const { username, setUsername } = useUsername();
+  const { username, userCode, setUsername } = useUsername();
   const navigate = useNavigate();
 
   const checkUsername = async () => {
@@ -32,9 +32,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     checkUsername();
-    console.log("username", username);
+    console.log("username", username, " || userCode", userCode);
     
-    socket.on("game queue", { username });
+    socket.on("game queue", { username, userCode });
   }, []);
 
   return (

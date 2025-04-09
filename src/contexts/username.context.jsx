@@ -4,11 +4,14 @@ import { useNavigate } from "react-router";
 
 export const UsernameContext = createContext({
   username: "",
+  userCode: "",
+  setUserCode: () => {},
   setUsername: () => {},
 });
 
 export const UsernameProvider = ({ children }) => {
   const [username, setUsername] = useState("");
+  const [userCode, setUserCode] = useState("");
   const navigate = useNavigate();
 
   const checkUsername = async () => {
@@ -19,6 +22,7 @@ export const UsernameProvider = ({ children }) => {
           headers: { Authorization: access_token },
         });
         setUsername(data.username);
+        setUserCode(data.userCode);
       } catch (error) {
         console.log("Error checking username:", error);
         localStorage.removeItem("access_token");
@@ -32,6 +36,7 @@ export const UsernameProvider = ({ children }) => {
       const { data } = await yahootServer.post("/login", { username: newUsername });
       localStorage.setItem("access_token", "Bearer " + data.access_token);
       setUsername(data.username);
+      setUserCode(data.userCode);
       navigate("/");
     } catch (error) {
       console.log("Error creating token:", error);
@@ -46,6 +51,7 @@ export const UsernameProvider = ({ children }) => {
     <UsernameContext.Provider
       value={{
         username,
+        userCode,
         setUsername: createTokenFromUsername,
       }}
     >

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { yahootServer } from "../../helpers/http-client";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router";
 
 export default function GamePage() {
   const [counter, setCounter] = useState(0);
-  console.log("🐄 - GamePage - counter:", counter);
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -23,11 +24,9 @@ export default function GamePage() {
     fetchQuestions();
   }, [counter]);
 
-  console.log("🐄 - fetchQuestions - questions:", questions);
-  console.log("🐄 - fetchQuestions - question:", question);
-
   async function getHint() {
     try {
+      console.log(question.question, question.rightAnswer, "<<< input ke hint");
       const response = await yahootServer.get(
         "/hint",
         { question: question.question, answers: question.rightAnswer },
@@ -35,6 +34,7 @@ export default function GamePage() {
           headers: { Authorization: localStorage.getItem("access_token") },
         }
       );
+
       console.log("🐄 - getHint - response:", response);
       Swal.fire({
         icon: "question",
@@ -61,10 +61,12 @@ export default function GamePage() {
           confirmButtonText: "Next",
         });
       }
-      setCounter(counter + 1);
-      console.log("🐄 - chooseAnswer - counter:", counter);
-      setQuestion(questions[counter]);
-      console.log("🐄 - GamePage after answer - question:", question);
+      if (counter < 9) {
+        setCounter(counter + 1);
+        setQuestion(questions[counter]);
+      } else {
+        navigate("/result");
+      }
     } catch (error) {
       console.log("🐄 - chooseAnswer - error:", error);
     }

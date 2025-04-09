@@ -18,7 +18,12 @@ export default function GamePage() {
         setQuestions(response.data.questions);
         setQuestion(response.data.questions[counter]);
       } catch (error) {
-        console.log("🐄 - fetchQuestions - error:", error);
+        // console.log("🐄 - fetchQuestions - error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Tidak bisa mengakses DB",
+          confirmButtonText: "close",
+        });
       }
     }
     fetchQuestions();
@@ -33,7 +38,7 @@ export default function GamePage() {
         question.answer3,
         question.rightAnswer,
       ]);
-      console.log(questionn, answers, typeof answers, "<<< input ke hint");
+      // console.log(questionn, answers, typeof answers, "<<< input ke hint");
       const response = await yahootServer.post(
         "/hint",
         {
@@ -45,14 +50,19 @@ export default function GamePage() {
         }
       );
 
-      console.log("🐄 - getHint - response:", response);
+      // console.log("🐄 - getHint - response:", response);
       Swal.fire({
         icon: "question",
         title: "Hint",
         text: response.data.hint,
       });
     } catch (error) {
-      console.log("🐄 - getHint - error:", error);
+      // console.log("🐄 - getHint - error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Gagal mengakses AI",
+        confirmButtonText: "close",
+      });
     }
   }
 

@@ -54,7 +54,10 @@ export default function MainPage() {
         {username ? (
           <h1 className="text-3xl">Hello, {username}!</h1>
         ) : (
-          <form onSubmit={() => inputUsername()}>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            inputUsername()
+            }}>
             <label className="input validator">
               <svg
                 className="h-[1em] opacity-50"

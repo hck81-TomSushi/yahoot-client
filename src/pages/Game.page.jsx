@@ -11,6 +11,8 @@ export default function GamePage() {
   const [counter, setCounter] = useState(0);
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
+  const [rightAnswer, setRightAnswer] = useState("");
+  const [answers, setAnswers] = useState([]);
   const navigate = useNavigate();
   const audioRef = useRef(null);
   const correctSFX = new Audio(CorrectSFX);
@@ -37,6 +39,12 @@ export default function GamePage() {
         });
         setQuestions(response.data.questions);
         setQuestion(response.data.questions[counter]);
+        randomizingAnswers([
+          response.data.questions[counter].rightAnswer,
+          response.data.questions[counter].answer1,
+          response.data.questions[counter].answer2,
+          response.data.questions[counter].answer3,
+        ]);
       } catch (error) {
         console.log("🐄 - fetchQuestions - error:", error);
         Swal.fire({
@@ -48,6 +56,12 @@ export default function GamePage() {
     }
     fetchQuestions();
   }, [counter]);
+
+  const randomizingAnswers = (answers) => {
+    setRightAnswer(answers[0]);
+    const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
+    setAnswers(shuffledAnswers);
+  }
 
   async function getHint() {
     try {
@@ -86,7 +100,7 @@ export default function GamePage() {
 
   async function chooseAnswer(answer) {
     try {
-      if (answer === question.rightAnswer) {
+      if (answer === rightAnswer) {
         correctSFX.play();
         Swal.fire({
           icon: "success",
@@ -163,38 +177,38 @@ export default function GamePage() {
         <div className="grid grid-cols-2 gap-4">
           <div
             className="card border-b-4 bg-primary w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer1)}
+            onClick={() => chooseAnswer(answers[0])}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">A.</h2>
-              <p>{question?.answer1}</p>
+              <p>{answers[0]}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-secondary w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer2)}
+            onClick={() => chooseAnswer(answers[1])}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">B.</h2>
-              <p>{question?.answer2}</p>
+              <p>{answers[1]}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-accent w-100 answer-card"
-            onClick={() => chooseAnswer(question?.answer3)}
+            onClick={() => chooseAnswer(answers[2])}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">C.</h2>
-              <p>{question?.answer3}</p>
+              <p>{answers[2]}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-neutral w-100 answer-card"
-            onClick={() => chooseAnswer(question?.rightAnswer)}
+            onClick={() => chooseAnswer(answers[3])}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">D.</h2>
-              <p>{question?.rightAnswer}</p>
+              <p>{answers[3]}</p>
             </div>
           </div>
         </div>

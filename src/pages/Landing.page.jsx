@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router";
 import { yahootServer } from "../../helpers/http-client";
 import YahootLogo from "../assets/yahoot_white.png";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { socket } from "../../helpers/socket";
+import { useUsername } from "../contexts/username.context";
 
 export default function LandingPage() {
-  const [username, setUsername] = useState("");
+  const { username, setUsername } = useUsername();
   const navigate = useNavigate();
 
   const checkUsername = async () => {
@@ -15,6 +17,7 @@ export default function LandingPage() {
           headers: { Authorization: localStorage.getItem("access_token") },
         });
         setUsername(data.username);
+        socket.connect();
       } catch (error) {
         console.log(error);
       }
@@ -29,6 +32,9 @@ export default function LandingPage() {
 
   useEffect(() => {
     checkUsername();
+    console.log("username", username);
+    
+    socket.on("game queue", { username });
   }, []);
 
   return (

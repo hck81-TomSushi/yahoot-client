@@ -8,9 +8,23 @@ import Leaderboard from "./pages/Leaderboard";
 import AuthenLayout from "./layouts/AuthenLayout";
 import LandingPage from "./pages/Landing.page";
 import LoginLayout from "./layouts/LoginLayout";
-import { UsernameProvider } from "./contexts/username.context";
+import { UsernameProvider, useUsername } from "./contexts/username.context";
+import { useEffect } from "react";
+import { socket } from "../helpers/socket";
 
 function App() {
+  const { username, setUsername } = useUsername();
+  
+  useEffect(() => {
+    if (username) {
+      socket.connect();
+    }
+
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+
   return (
     <BrowserRouter>
       <UsernameProvider>

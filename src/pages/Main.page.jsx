@@ -11,8 +11,6 @@ export default function MainPage() {
 
   const inputUsername = async () => {
     try {
-      // const { data } = await yahootServer.post("/login", { username });
-      // localStorage.setItem("access_token", "Bearer " + data.access_token);
       setUsername(formName);
       navigate("/");
     } catch (error) {

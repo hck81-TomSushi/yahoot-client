@@ -1,19 +1,12 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
 import { useUsername } from "../contexts/username.context";
-
-const socket = io("http://localhost:3000", {
-  auth: {
-    token: localStorage.getItem("access_token"),
-  },
-  // reconnection: true,
-  // reconnectionAttempts: 5,
-  // reconnectionDelay: 1000,
-});
+import { socket } from "../../helpers/socket";
+import { useNavigate } from "react-router";
 
 export default function WaitingRoom() {
   const { username, setUsername } = useUsername();
   const [isReady, setIsReady] = useState(false);
+  const navigate = useNavigate();
 
   // fetch question untuk dapet tema quiz
   // real time user yang ready
@@ -37,26 +30,24 @@ export default function WaitingRoom() {
   }
 
   useEffect(() => {
-    socket.on("say hello", (params) => {
-      console.log(params, "<<< message dari server");
+    socket.emit("game queue", { username });
+
+    socket.on("game queue", (roomData) => {
+      console.log("Updated room data:", roomData);
     });
 
-    socket.emit("say hello", { message: `Hello from ${username}` });
-
-
     return () => {
-      socket.disconnect();
+      socket.off("game queue");
     };
   }, []);
 
   const handleSayHello = () => {
-    // Emit "say hello" event to the server
     socket.emit("say hello", { message: "Hello from client" });
   };
 
   return (
     <section className="chalkboard">
-      <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
+      <a onClick={() => navigate('/')} className="btn btn-success border-b-4 absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

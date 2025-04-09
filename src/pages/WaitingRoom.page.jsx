@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import YahootLogo from "../assets/yahoot_white.png";
+import BGM from "../assets/main_bgm.mp3";
 import CountdownSound from "../assets/countdown.mp3";
 
 export default function WaitingRoom() {
   const [countdown, setCountdown] = useState(-1);
   const navigate = useNavigate();
+  const audioRef = useRef(null);
   const countdownSound = new Audio(CountdownSound);
+
+  useEffect(() => {
+    function playAudio() {
+      const audio = audioRef.current;
+      if (audio) {
+        audio.play().catch((error) => {
+          console.error("Error playing audio:", error);
+        });
+        if (countdown > 0) {
+          audio.pause();
+        }
+      }
+    }
+    playAudio();
+  }, [countdown]);
 
   // real time user yang ready
   // klik button user sendiri -> status user sendiri jadi ready
@@ -31,6 +48,7 @@ export default function WaitingRoom() {
 
   return (
     <section className="chalkboard">
+      <audio ref={audioRef} src={BGM} loop autoPlay />
       <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
         <svg
           xmlns="http://www.w3.org/2000/svg"

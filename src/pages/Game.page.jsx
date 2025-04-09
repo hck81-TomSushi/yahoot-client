@@ -1,15 +1,45 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { yahootServer } from "../../helpers/http-client";
 import Swal from "sweetalert2";
 
 export default function GamePage() {
+  const [counter, setCounter] = useState(0);
+  console.log("🐄 - GamePage - counter:", counter);
   const [question, setQuestion] = useState({});
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    async function fetchQuestions() {
+      try {
+        const response = await yahootServer.get("/questions", {
+          headers: { Authorization: localStorage.getItem("access_token") },
+        });
+        setQuestions(response.data.questions);
+        setQuestion(response.data.questions[counter]);
+      } catch (error) {
+        console.log("🐄 - fetchQuestions - error:", error);
+      }
+    }
+    fetchQuestions();
+  }, [counter]);
+
+  console.log("🐄 - fetchQuestions - questions:", questions);
+  console.log("🐄 - fetchQuestions - question:", question);
 
   async function getHint() {
     try {
+      const response = await yahootServer.get(
+        "/hint",
+        { question: question.question, answers: question.rightAnswer },
+        {
+          headers: { Authorization: localStorage.getItem("access_token") },
+        }
+      );
+      console.log("🐄 - getHint - response:", response);
       Swal.fire({
         icon: "question",
         title: "Hint",
-        text: "Albert Einstein is a physicist known for his theory of relativity.",
+        text: response.data,
       });
     } catch (error) {
       console.log("🐄 - getHint - error:", error);
@@ -18,7 +48,7 @@ export default function GamePage() {
 
   async function chooseAnswer(answer) {
     try {
-      if (answer === "Albert Einstein") {
+      if (answer === question.rightAnswer) {
         Swal.fire({
           icon: "success",
           title: "Correct answer",
@@ -31,12 +61,15 @@ export default function GamePage() {
           confirmButtonText: "Next",
         });
       }
-      // go to the next question kayak gini kayanya
-      setQuestion(question.id + 1);
+      setCounter(counter + 1);
+      console.log("🐄 - chooseAnswer - counter:", counter);
+      setQuestion(questions[counter]);
+      console.log("🐄 - GamePage after answer - question:", question);
     } catch (error) {
       console.log("🐄 - chooseAnswer - error:", error);
     }
   }
+
   return (
     <section className="chalkboard">
       <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
@@ -57,9 +90,7 @@ export default function GamePage() {
       </a>
       <div className="h-full flex flex-col items-center justify-evenly">
         <h1 className="text-3xl">Quiz Science</h1>
-        <p className="text-xl text-center">
-          Siapa yang menemukan teori relativitas?
-        </p>
+        <p className="text-xl text-center">{question?.question}</p>
         <div>
           <button
             className="btn btn-success border-b-4"
@@ -87,38 +118,38 @@ export default function GamePage() {
         <div className="grid grid-cols-2 gap-4">
           <div
             className="card border-b-4 bg-primary w-100 answer-card"
-            onClick={() => chooseAnswer("Albert Einstein")}
+            onClick={() => chooseAnswer(question?.answer1)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">A.</h2>
-              <p>Albert Einstein</p>
+              <p>{question?.answer1}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-secondary w-100 answer-card"
-            onClick={() => chooseAnswer("Isaac Newton")}
+            onClick={() => chooseAnswer(question?.answer2)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">B.</h2>
-              <p>Isaac Newton</p>
+              <p>{question?.answer2}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-accent w-100 answer-card"
-            onClick={() => chooseAnswer("Galileo Galilei")}
+            onClick={() => chooseAnswer(question?.answer3)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">C.</h2>
-              <p>Galileo Galilei</p>
+              <p>{question?.answer3}</p>
             </div>
           </div>
           <div
             className="card border-b-4 bg-neutral w-100 answer-card"
-            onClick={() => chooseAnswer("Nikola Tesla")}
+            onClick={() => chooseAnswer(question?.rightAnswer)}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">D.</h2>
-              <p>Nikola Tesla</p>
+              <p>{question?.rightAnswer}</p>
             </div>
           </div>
         </div>

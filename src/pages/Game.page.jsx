@@ -16,23 +16,23 @@ export default function GamePage() {
     }
   }
 
-  async function chooseAnswer() {
+  async function chooseAnswer(answer) {
     try {
-      // if answer is correct
-      Swal.fire({
-        icon: "success",
-        title: "Correct answer",
-        confirmButtonText: "Next",
-      });
-      // if answer is wrong
-      // Swal.fire({
-      //   icon: "error",
-      //   title: "Wrong answer",
-      //   confirmButtonText: "Next",
-      // });
-      // go to the next question
+      if (answer === "Albert Einstein") {
+        Swal.fire({
+          icon: "success",
+          title: "Correct answer",
+          confirmButtonText: "Next",
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Wrong answer",
+          confirmButtonText: "Next",
+        });
+      }
+      // go to the next question kayak gini kayanya
       setQuestion(question.id + 1);
-      // gatau ges masih kasar pokoknya gitulah
     } catch (error) {
       console.log("🐄 - chooseAnswer - error:", error);
     }
@@ -44,13 +44,13 @@ export default function GamePage() {
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
-          stroke-width="1.5"
+          strokeWidth="1.5"
           stroke="currentColor"
-          class="size-6"
+          className="size-6"
         >
           <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            strokeLinecap="round"
+            strokeLinejoin="round"
             d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
           />
         </svg>
@@ -87,7 +87,7 @@ export default function GamePage() {
         <div className="grid grid-cols-2 gap-4">
           <div
             className="card border-b-4 bg-primary w-100 answer-card"
-            onClick={chooseAnswer}
+            onClick={() => chooseAnswer("Albert Einstein")}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">A.</h2>
@@ -96,7 +96,7 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-secondary w-100 answer-card"
-            onClick={chooseAnswer}
+            onClick={() => chooseAnswer("Isaac Newton")}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">B.</h2>
@@ -105,7 +105,7 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-accent w-100 answer-card"
-            onClick={chooseAnswer}
+            onClick={() => chooseAnswer("Galileo Galilei")}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">C.</h2>
@@ -114,7 +114,7 @@ export default function GamePage() {
           </div>
           <div
             className="card border-b-4 bg-neutral w-100 answer-card"
-            onClick={chooseAnswer}
+            onClick={() => chooseAnswer("Nikola Tesla")}
           >
             <div className="card-body items-center text-center">
               <h2 className="card-title">D.</h2>

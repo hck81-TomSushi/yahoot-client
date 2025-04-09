@@ -46,7 +46,10 @@ export default function MainPage() {
 
       <div className="flex flex-col items-center justify-evenly h-full">
         <img src={YahootLogo} alt="Yahoot Logo" className="h-15" />
-        <form onSubmit={() => inputUsername()}>
+        <form onSubmit={(e) => {
+            e.preventDefault();
+            inputUsername()
+            }}>
           <label className="input validator my-4">
             <input
               type="text"

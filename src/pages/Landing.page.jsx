@@ -46,8 +46,6 @@ export default function LandingPage() {
 
   useEffect(() => {
     checkUsername();
-    console.log("username", username, " || userCode", userCode);
-    
     socket.on("game queue", { username, userCode });
   }, []);
 

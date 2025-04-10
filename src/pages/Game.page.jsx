@@ -6,8 +6,11 @@ import BGM from "../assets/quiz_bgm.mp3";
 import CorrectSFX from "../assets/correct_answer.mp3";
 import WrongSFX from "../assets/wrong_answer.mp3";
 import HintSFX from "../assets/hint.mp3";
+import { socket } from "../../helpers/socket";
+import { useUsername } from "../contexts/username.context";
 
 export default function GamePage() {
+  const { username, userCode, setUsername } = useUsername();
   const [counter, setCounter] = useState(0);
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
@@ -18,6 +21,8 @@ export default function GamePage() {
   const correctSFX = new Audio(CorrectSFX);
   const wrongSFX = new Audio(WrongSFX);
   const hintSFX = new Audio(HintSFX);
+  const [countdown, setCountdown] = useState(null); // State to store the countdown timer
+  const [scoreboard, setScoreboard] = useState({}); // State to store the scoreboard
 
   useEffect(() => {
     function playAudio() {
@@ -29,7 +34,35 @@ export default function GamePage() {
       }
     }
     playAudio();
+
+    socket.emit("started", { username, userCode });
   }, []);
+
+  
+  useEffect(() => {
+    // Listen for the countdown event
+    socket.on("game countdown", (time) => {
+      setCountdown(time); // Update the countdown timer
+    });
+
+    // Listen for the scoreboard event
+    socket.on("scoreboard", (updatedScoreboard) => {
+      setScoreboard(updatedScoreboard); // Update the scoreboard
+    });
+
+    // Listen for the "move to result" event
+    socket.on("move to result", (data) => {
+      console.log("Navigating to:", data.path);
+      navigate(data.path, { state: { scoreboard: data.scoreboard } }); // Pass the scoreboard to /result
+    });
+
+    // Cleanup: Remove listeners when the component unmounts
+    return () => {
+      socket.off("game countdown");
+      socket.off("scoreboard");
+      socket.off("move to result");
+    };
+  }, [navigate]);
 
   useEffect(() => {
     async function fetchQuestions() {
@@ -57,6 +90,10 @@ export default function GamePage() {
     fetchQuestions();
   }, [counter]);
 
+  const updateScore = (points) => {
+    socket.emit("update score", { socketId: socket.id, score: points });
+  };
+
   const randomizingAnswers = (answers) => {
     setRightAnswer(answers[0]);
     const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
@@ -72,6 +109,7 @@ export default function GamePage() {
         question.answer3,
         question.rightAnswer,
       ]);
+      updateScore(-20)
       const response = await yahootServer.post(
         "/hint",
         {
@@ -107,7 +145,7 @@ export default function GamePage() {
           title: "Jawaban benar",
           confirmButtonText: "Selanjutnya",
         });
-        // dapat poin -> kalo pake hint poinnya ga maksimal
+        updateScore(100)
       } else {
         wrongSFX.play();
         Swal.fire({
@@ -149,6 +187,17 @@ export default function GamePage() {
       </a>
       <div className="h-full flex flex-col items-center justify-evenly">
         <h1 className="text-3xl">Tema Kuis: Science</h1>
+        <h3>timer : {countdown}</h3>
+        <div>
+          <h2 className="text-xl">Scoreboard:</h2>
+          <ul>
+            {Object.entries(scoreboard).map(([username, score]) => (
+              <li key={username}>
+                {username}: {score} points
+              </li>
+            ))}
+          </ul>
+        </div>
         <p className="text-xl text-center">{question?.question}</p>
         <div>
           <button

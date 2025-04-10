@@ -1,0 +1,16 @@
+@import "tailwindcss";
+@plugin "daisyui" {
+  themes: dark --default, caramellatte;
+}
+
+#root {
+  background-color: black;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: "Grandstander", cursive;
+  font-optical-sizing: auto;
+  margin: 0 auto;
+}

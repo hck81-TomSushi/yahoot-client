@@ -59,7 +59,7 @@ export default function WaitingRoom() {
           Pengetahuan Umum
         </h1>
 
-        <p>Countdown : {countdown} second</p>
+        <p>Countdown : {countdown} detik</p>
         <div className="flex flex-row gap-4 items-center justify-items-center">
           {users.map((user, index) => (
             <button className="btn btn-accent" title="Ready to play">

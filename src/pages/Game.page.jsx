@@ -173,83 +173,80 @@ export default function GamePage() {
     <section className="chalkboard">
       <audio ref={audioRef} src={BGM} loop autoPlay />
       <HomeButton />
-      <div className="h-full flex flex-col items-center justify-evenly">
-        {isWaiting ? (
+      {isWaiting ? (
+        <div className="h-full flex flex-col items-center justify-evenly">
+          <p className="text-3xl m-5">{countdown} detik</p>
+          <p className="text-xl">Menunggu pemain lain selesai...</p>
+        </div>
+      ) : (
+        <div className="h-full flex flex-col items-center justify-evenly">
+          <p className="text-xl">Sisa waktu : {countdown} detik</p>
           <div>
-            <p className="text-3xl m-5">{countdown} detik</p>
-            <p className="text-xl">Menunggu pemain lain selesai...</p>
-          </div>
-        ) : (
-          <div>
-          <h3>Sisa Waktu : {countdown}</h3>
-          <div>
-          <h2 className="text-xl">Top Scorer:</h2>
-          <ul>
-            {Object.entries(scoreboard).map(([username, score], i) => (
+            <h2 className="text-xl">Top Scorer:</h2>
+            <ul>
+              {Object.entries(scoreboard).map(([username, score], i) =>
                 i < 3 ? (
                   <li key={username}>
                     {username}: {score} points
                   </li>
                 ) : null
-            ))}
-          </ul>
-        </div>
-        <p className="text-xl text-center">{question?.question}</p>
-        <div>
-          <button
-            className="btn btn-success border-b-4"
-            onClick={getHint}
-            title="Get Hint from AI"
-          >
-              
-                <svg
-                  className="h-[1em] opacity-50"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                >
-                  <g
-                    strokeLinejoin="round"
-                    strokeLinecap="round"
-                    strokeWidth="2.5"
-                    fill="none"
-                    stroke="currentColor"
-                  >
-                    <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-                    <circle
-                      cx="16.5"
-                      cy="7.5"
-                      r=".5"
-                      fill="currentColor"
-                    ></circle>
-                  </g>
-                </svg>
-              </button>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <AnswerCard
-                choice="A"
-                data={answers[0]}
-                onClick={() => chooseAnswer(answers[0])}
-              />
-              <AnswerCard
-                choice="B"
-                data={answers[1]}
-                onClick={() => chooseAnswer(answers[1])}
-              />
-              <AnswerCard
-                choice="C"
-                data={answers[2]}
-                onClick={() => chooseAnswer(answers[2])}
-              />
-              <AnswerCard
-                choice="D"
-                data={answers[3]}
-                onClick={() => chooseAnswer(answers[3])}
-              />
-            </div>
+              )}
+            </ul>
           </div>
-        )}
-      </div>
+          <p className="text-xl text-center">{question?.question}</p>
+          <div>
+            <button
+              className="btn btn-success border-b-4"
+              onClick={getHint}
+              title="Get Hint from AI"
+            >
+              <svg
+                className="h-[1em] opacity-50"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+              >
+                <g
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                  strokeWidth="2.5"
+                  fill="none"
+                  stroke="currentColor"
+                >
+                  <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+                  <circle
+                    cx="16.5"
+                    cy="7.5"
+                    r=".5"
+                    fill="currentColor"
+                  ></circle>
+                </g>
+              </svg>
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <AnswerCard
+              choice="A"
+              data={answers[0]}
+              onClick={() => chooseAnswer(answers[0])}
+            />
+            <AnswerCard
+              choice="B"
+              data={answers[1]}
+              onClick={() => chooseAnswer(answers[1])}
+            />
+            <AnswerCard
+              choice="C"
+              data={answers[2]}
+              onClick={() => chooseAnswer(answers[2])}
+            />
+            <AnswerCard
+              choice="D"
+              data={answers[3]}
+              onClick={() => chooseAnswer(answers[3])}
+            />
+          </div>
+        </div>
+      )}
     </section>
   );
 }

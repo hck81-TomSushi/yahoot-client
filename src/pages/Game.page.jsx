@@ -181,23 +181,26 @@ export default function GamePage() {
           </div>
         ) : (
           <div>
-            <h3>Sisa Waktu : {countdown}</h3>
-            <div>
-              <h2 className="text-xl">Papan Nilai:</h2>
-              <ul>
-                {Object.entries(scoreboard).map(([username, score]) => (
+          <h3>Sisa Waktu : {countdown}</h3>
+          <div>
+          <h2 className="text-xl">Top Scorer:</h2>
+          <ul>
+            {Object.entries(scoreboard).map(([username, score], i) => (
+                i < 3 ? (
                   <li key={username}>
                     {username}: {score} points
                   </li>
-                ))}
-              </ul>
-            </div>
-            <p className="text-xl text-center">{question?.question}</p>
-            <div>
-              <button
-                className="btn btn-success border-b-4"
-                onClick={getHint}
-                title="Get Hint from AI"
+                ) : null
+            ))}
+          </ul>
+        </div>
+        <p className="text-xl text-center">{question?.question}</p>
+        <div>
+          <button
+            className="btn btn-success border-b-4"
+            onClick={getHint}
+            title="Get Hint from AI"
+          >
               >
                 <svg
                   className="h-[1em] opacity-50"

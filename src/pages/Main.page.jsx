@@ -1,16 +1,22 @@
-import { useNavigate } from "react-router";
+import {useNavigate} from "react-router";
 import YahootLogo from "../assets/yahoot_white.png";
 import Swal from "sweetalert2";
-import { useUsername } from "../contexts/username.context";
-import { useState } from "react";
+import {useUsername} from "../contexts/username.context";
+import {useState} from "react";
 
 export default function MainPage() {
-  const { username, setUsername } = useUsername();
-  const [ formName, setFormName ] = useState('');
+  const {username, setUsername} = useUsername();
+  const [formName, setFormName] = useState("");
   const navigate = useNavigate();
 
   const inputUsername = async () => {
     try {
+      if (!formName.trim()) {
+        throw new Error("Username jangan kosong!");
+      }
+      if (formName.trim().length < 3) {
+        throw new Error("Username terlalu pendek");
+      }
       setUsername(formName);
       navigate("/");
     } catch (error) {
@@ -18,6 +24,7 @@ export default function MainPage() {
       Swal.fire({
         icon: "error",
         title: "Namanya ga bener!",
+        text: error.message,
         showConfirmButton: false,
         timer: 1500,
       });
@@ -33,8 +40,7 @@ export default function MainPage() {
           viewBox="0 0 24 24"
           strokeWidth="1.5"
           stroke="currentColor"
-          className="size-6"
-        >
+          className="size-6">
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -45,10 +51,11 @@ export default function MainPage() {
 
       <div className="flex flex-col items-center justify-evenly h-full">
         <img src={YahootLogo} alt="Yahoot Logo" className="h-15" />
-        <form onSubmit={(e) => {
+        <form
+          onSubmit={(e) => {
             e.preventDefault();
-            inputUsername()
-            }}>
+            inputUsername();
+          }}>
           <label className="input validator my-4">
             <input
               type="text"
@@ -62,8 +69,7 @@ export default function MainPage() {
           <button
             className="btn btn-accent btn-lg text-3lg w-80 h-15"
             type="button"
-            onClick={() => inputUsername()}
-          >
+            onClick={() => inputUsername()}>
             I want this name!
           </button>
         </form>

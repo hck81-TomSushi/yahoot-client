@@ -175,12 +175,14 @@ export default function GamePage() {
         <h1 className="text-3xl">Tema Kuis: Science</h1>
         <h3>timer : {countdown}</h3>
         <div>
-          <h2 className="text-xl">Scoreboard:</h2>
+          <h2 className="text-xl">Top Scorer:</h2>
           <ul>
-            {Object.entries(scoreboard).map(([username, score]) => (
-              <li key={username}>
-                {username}: {score} points
-              </li>
+            {Object.entries(scoreboard).map(([username, score], i) => (
+                i < 3 ? (
+                  <li key={username}>
+                    {username}: {score} points
+                  </li>
+                ) : null
             ))}
           </ul>
         </div>

@@ -7,6 +7,7 @@ import CorrectSFX from "../assets/correct_answer.mp3";
 import WrongSFX from "../assets/wrong_answer.mp3";
 import HintSFX from "../assets/hint.mp3";
 import AnswerCard from "../components/AnswerCard";
+import HomeButton from "../components/HomeButton";
 
 export default function GamePage() {
   const [counter, setCounter] = useState(0);
@@ -131,23 +132,7 @@ export default function GamePage() {
   return (
     <section className="chalkboard">
       <audio ref={audioRef} src={BGM} loop autoPlay />
-
-      <a href="/" className="btn btn-success border-b-4 absolute top-4 left-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-          strokeWidth="1.5"
-          stroke="currentColor"
-          className="size-6"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
-          />
-        </svg>
-      </a>
+      <HomeButton />
       <div className="h-full flex flex-col items-center justify-evenly">
         <h1 className="text-3xl">Tema Kuis: Science</h1>
         <p className="text-xl text-center">{question?.question}</p>

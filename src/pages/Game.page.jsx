@@ -6,6 +6,7 @@ import BGM from "../assets/quiz_bgm.mp3";
 import CorrectSFX from "../assets/correct_answer.mp3";
 import WrongSFX from "../assets/wrong_answer.mp3";
 import HintSFX from "../assets/hint.mp3";
+import AnswerCard from "../components/AnswerCard";
 
 export default function GamePage() {
   const [counter, setCounter] = useState(0);
@@ -61,7 +62,7 @@ export default function GamePage() {
     setRightAnswer(answers[0]);
     const shuffledAnswers = answers.sort(() => Math.random() - 0.5);
     setAnswers(shuffledAnswers);
-  }
+  };
 
   async function getHint() {
     try {
@@ -175,42 +176,26 @@ export default function GamePage() {
           </button>
         </div>
         <div className="grid grid-cols-2 gap-4">
-          <div
-            className="card border-b-4 bg-primary w-100 answer-card"
+          <AnswerCard
+            choice="A"
+            data={answers[0]}
             onClick={() => chooseAnswer(answers[0])}
-          >
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">A.</h2>
-              <p>{answers[0]}</p>
-            </div>
-          </div>
-          <div
-            className="card border-b-4 bg-secondary w-100 answer-card"
+          />
+          <AnswerCard
+            choice="B"
+            data={answers[1]}
             onClick={() => chooseAnswer(answers[1])}
-          >
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">B.</h2>
-              <p>{answers[1]}</p>
-            </div>
-          </div>
-          <div
-            className="card border-b-4 bg-accent w-100 answer-card"
+          />
+          <AnswerCard
+            choice="C"
+            data={answers[2]}
             onClick={() => chooseAnswer(answers[2])}
-          >
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">C.</h2>
-              <p>{answers[2]}</p>
-            </div>
-          </div>
-          <div
-            className="card border-b-4 bg-neutral w-100 answer-card"
+          />
+          <AnswerCard
+            choice="D"
+            data={answers[3]}
             onClick={() => chooseAnswer(answers[3])}
-          >
-            <div className="card-body items-center text-center">
-              <h2 className="card-title">D.</h2>
-              <p>{answers[3]}</p>
-            </div>
-          </div>
+          />
         </div>
       </div>
     </section>

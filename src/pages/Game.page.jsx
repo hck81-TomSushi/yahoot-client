@@ -13,6 +13,7 @@ import HomeButton from "../components/HomeButton";
 
 export default function GamePage() {
   const { username, userCode, setUsername } = useUsername();
+  const [isWaiting, setIsWaiting] = useState(false);
   const [counter, setCounter] = useState(0);
   const [question, setQuestion] = useState({});
   const [questions, setQuestions] = useState([]);
@@ -40,7 +41,6 @@ export default function GamePage() {
     socket.emit("started", { username, userCode });
   }, []);
 
-  
   useEffect(() => {
     // Listen for the countdown event
     socket.on("game countdown", (time) => {
@@ -111,7 +111,7 @@ export default function GamePage() {
         question.answer3,
         question.rightAnswer,
       ]);
-      updateScore(-20)
+      updateScore(-20);
       const response = await yahootServer.post(
         "/hint",
         {
@@ -147,7 +147,7 @@ export default function GamePage() {
           title: "Jawaban benar",
           confirmButtonText: "Selanjutnya",
         });
-        updateScore(100)
+        updateScore(100);
       } else {
         wrongSFX.play();
         Swal.fire({
@@ -159,8 +159,10 @@ export default function GamePage() {
       if (counter < 9) {
         setCounter(counter + 1);
         setQuestion(questions[counter]);
-      } else {
+      } else if (counter >= 9 && countdown === 0) {
         navigate("/result");
+      } else {
+        setIsWaiting(true);
       }
     } catch (error) {
       console.log("🐄 - chooseAnswer - error:", error);
@@ -172,65 +174,78 @@ export default function GamePage() {
       <audio ref={audioRef} src={BGM} loop autoPlay />
       <HomeButton />
       <div className="h-full flex flex-col items-center justify-evenly">
-        <h1 className="text-3xl">Tema Kuis: Science</h1>
-        <h3>timer : {countdown}</h3>
-        <div>
-          <h2 className="text-xl">Scoreboard:</h2>
-          <ul>
-            {Object.entries(scoreboard).map(([username, score]) => (
-              <li key={username}>
-                {username}: {score} points
-              </li>
-            ))}
-          </ul>
-        </div>
-        <p className="text-xl text-center">{question?.question}</p>
-        <div>
-          <button
-            className="btn btn-success border-b-4"
-            onClick={getHint}
-            title="Get Hint from AI"
-          >
-            <svg
-              className="h-[1em] opacity-50"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-            >
-              <g
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                strokeWidth="2.5"
-                fill="none"
-                stroke="currentColor"
+        {isWaiting ? (
+          <div>
+            <p className="text-3xl m-5">{countdown} detik</p>
+            <p className="text-xl">Menunggu pemain lain selesai...</p>
+          </div>
+        ) : (
+          <div>
+            <h3>Sisa Waktu : {countdown}</h3>
+            <div>
+              <h2 className="text-xl">Papan Nilai:</h2>
+              <ul>
+                {Object.entries(scoreboard).map(([username, score]) => (
+                  <li key={username}>
+                    {username}: {score} points
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <p className="text-xl text-center">{question?.question}</p>
+            <div>
+              <button
+                className="btn btn-success border-b-4"
+                onClick={getHint}
+                title="Get Hint from AI"
               >
-                <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
-                <circle cx="16.5" cy="7.5" r=".5" fill="currentColor"></circle>
-              </g>
-            </svg>
-          </button>
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <AnswerCard
-            choice="A"
-            data={answers[0]}
-            onClick={() => chooseAnswer(answers[0])}
-          />
-          <AnswerCard
-            choice="B"
-            data={answers[1]}
-            onClick={() => chooseAnswer(answers[1])}
-          />
-          <AnswerCard
-            choice="C"
-            data={answers[2]}
-            onClick={() => chooseAnswer(answers[2])}
-          />
-          <AnswerCard
-            choice="D"
-            data={answers[3]}
-            onClick={() => chooseAnswer(answers[3])}
-          />
-        </div>
+                <svg
+                  className="h-[1em] opacity-50"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                >
+                  <g
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    strokeWidth="2.5"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"></path>
+                    <circle
+                      cx="16.5"
+                      cy="7.5"
+                      r=".5"
+                      fill="currentColor"
+                    ></circle>
+                  </g>
+                </svg>
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <AnswerCard
+                choice="A"
+                data={answers[0]}
+                onClick={() => chooseAnswer(answers[0])}
+              />
+              <AnswerCard
+                choice="B"
+                data={answers[1]}
+                onClick={() => chooseAnswer(answers[1])}
+              />
+              <AnswerCard
+                choice="C"
+                data={answers[2]}
+                onClick={() => chooseAnswer(answers[2])}
+              />
+              <AnswerCard
+                choice="D"
+                data={answers[3]}
+                onClick={() => chooseAnswer(answers[3])}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </section>
   );

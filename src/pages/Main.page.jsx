@@ -32,6 +32,9 @@ export default function MainPage() {
       if (formName.trim().length < 3) {
         throw new Error("Username terlalu pendek");
       }
+      if (!/^[a-zA-Z0-9]+$/.test(formName.trim())) {
+        throw new Error("Username hanya boleh mengandung huruf dan angka!");
+      }
       setUsername(formName);
       navigate("/");
     } catch (error) {

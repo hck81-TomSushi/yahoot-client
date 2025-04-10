@@ -26,3 +26,23 @@
 .answer-card:hover {
   cursor: pointer;
 }
+
+.answer-card:nth-of-type(1) {
+  background-color: var(--color-primary);
+  border-bottom: #470a00 5px solid;
+}
+
+.answer-card:nth-of-type(2) {
+  background-color: var(--color-secondary);
+  border-bottom: #0c0500 5px solid;
+}
+
+.answer-card:nth-of-type(3) {
+  background-color: var(--color-accent);
+  border-bottom: #461f14 5px solid;
+}
+
+.answer-card:nth-of-type(4) {
+  background-color: var(--color-neutral);
+  border-bottom: #651b00 5px solid;
+}

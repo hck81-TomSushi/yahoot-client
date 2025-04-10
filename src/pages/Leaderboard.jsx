@@ -1,10 +1,13 @@
 import { useEffect, useRef } from "react";
 import SFX from "../assets/leaderboard.mp3";
 import BGM from "../assets/main_bgm.mp3";
+import { useLocation } from "react-router";
 import HomeButton from "../components/HomeButton";
 
 export default function Leaderboard() {
   const audioRef = useRef(null);
+  const location = useLocation();
+  const scoreboard = location.state?.scoreboard || {}; // Retrieve the scoreboard from state
 
   useEffect(() => {
     function playAudio() {
@@ -35,31 +38,13 @@ export default function Leaderboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <th>1</th>
-                <td>sonangga</td>
-                <td>1000</td>
-              </tr>
-              <tr>
-                <th>2</th>
-                <td>marhanura</td>
-                <td>900</td>
-              </tr>
-              <tr>
-                <th>3</th>
-                <td>YanbiPanjaitan</td>
-                <td>800</td>
-              </tr>
-              <tr>
-                <th>4</th>
-                <td>hilmidh</td>
-                <td>700</td>
-              </tr>
-              <tr>
-                <th>5</th>
-                <td>DikiNovtrianda</td>
-                <td>600</td>
-              </tr>
+              {Object.entries(scoreboard).map(([username, score], i) => (
+                <tr key={username}>
+                  <th>{i + 1}</th>
+                  <td>{username}</td>
+                  <td>{score}</td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

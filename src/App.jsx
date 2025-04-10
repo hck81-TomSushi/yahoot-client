@@ -13,7 +13,7 @@ import { useEffect } from "react";
 import { socket } from "../helpers/socket";
 
 function App() {
-  const { username, setUsername } = useUsername();
+  const { username } = useUsername();
   
   useEffect(() => {
     if (username) {

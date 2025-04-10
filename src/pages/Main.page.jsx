@@ -1,4 +1,4 @@
-import {useNavigate} from "react-router";
+import { useNavigate } from "react-router";
 import YahootLogo from "../assets/yahoot_white.png";
 import Swal from "sweetalert2";
 import { useUsername } from "../contexts/username.context";
@@ -7,7 +7,7 @@ import HomeButton from "../components/HomeButton";
 import BGM from "../assets/main_bgm.mp3";
 
 export default function MainPage() {
-  const {username, setUsername} = useUsername();
+  const { username, setUsername } = useUsername();
   const [formName, setFormName] = useState("");
   const navigate = useNavigate();
   const audioRef = useRef(null);
@@ -74,8 +74,9 @@ export default function MainPage() {
           <button
             className="btn btn-accent btn-lg text-3lg w-80 h-15"
             type="button"
-            onClick={() => inputUsername()}>
-            I want this name!
+            onClick={() => inputUsername()}
+          >
+            Pilih nama ini!
           </button>
         </form>
       </div>

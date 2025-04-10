@@ -53,13 +53,7 @@ export default function WaitingRoom() {
       <HomeButton />
       <div className="h-full flex flex-col items-center justify-evenly">
         <img src={YahootLogo} alt="Yahoot Logo" className="h-15" />
-        <h1 className="text-2xl">
-          Quiz Theme:
-          <br />
-          Pengetahuan Umum
-        </h1>
-
-        <p>Countdown : {countdown} detik</p>
+        <p className="text-2xl">Countdown : {countdown} detik</p>
         <div className="flex flex-row gap-4 items-center justify-items-center">
           {users.map((user, index) => (
             <button className="btn btn-accent" title="Ready to play">

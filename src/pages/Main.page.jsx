@@ -66,7 +66,7 @@ export default function MainPage() {
               type="text"
               className="text-center text-accent text-xl"
               required
-              placeholder="Enter your username"
+              placeholder="Masukkan username"
               value={formName}
               onChange={(e) => setFormName(e.target.value)}
             />
